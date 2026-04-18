@@ -19,20 +19,14 @@
     <div id="status">Model yükleniyor...</div>
 
     <a-scene background="color: #222">
-      <a-assets timeout="15000">
-        <a-asset-item
-          id="umay-model"
-          src="https://taslarkonusursa.github.io/modelsforproject/umayanarenkli-v2.glb">
-        </a-asset-item>
-      </a-assets>
 
       <a-light type="ambient" intensity="2"></a-light>
       <a-light type="directional" position="0 5 5" intensity="2"></a-light>
 
-      <!-- Model tam kameranın önünde -->
+      <!-- a-assets YOK, src direkt URL -->
       <a-gltf-model
         id="test-model"
-        src="#umay-model"
+        src="https://taslarkonusursa.github.io/modelsforproject/umayanarenkli-v2.glb"
         position="0 0 -2"
         scale="1 1 1"
         rotation="0 0 0">
@@ -50,13 +44,13 @@
         if (mesh) {
           const box = new THREE.Box3().setFromObject(mesh);
           const size = box.getSize(new THREE.Vector3());
-          status.textContent = 'Model yüklendi! Boyut: x=' + size.x.toFixed(2) + ' y=' + size.y.toFixed(2) + ' z=' + size.z.toFixed(2);
-          status.style.background = 'rgba(0,100,0,0.8)';
+          status.textContent = 'Yüklendi! x=' + size.x.toFixed(2) + ' y=' + size.y.toFixed(2) + ' z=' + size.z.toFixed(2);
+          status.style.background = 'rgba(0,120,0,0.8)';
         }
       });
 
       model.addEventListener('model-error', (e) => {
-        status.textContent = 'Model yüklenemedi: ' + JSON.stringify(e.detail);
+        status.textContent = 'HATA: ' + JSON.stringify(e.detail);
         status.style.background = 'rgba(150,0,0,0.8)';
       });
     </script>
