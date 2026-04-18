@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Umay Ana AR</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      html, body { margin: 0; overflow: hidden; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <a-scene
+      mindar-image="imageTargetSrc: https://raw.githubusercontent.com/taslarkonusursa/modelsforproject/main/targets.mind; autoStart: true;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
+
+      <a-assets>
+        <a-asset-item
+          id="umay-model"
+          src="https://raw.githubusercontent.com/taslarkonusursa/modelsforproject/main/umayanarenkli-v2.glb">
+        </a-asset-item>
+      </a-assets>
+
+      <a-light type="ambient"     color="#ffffff" intensity="0.8"></a-light>
+      <a-light type="directional" color="#ffe8c0" intensity="1.2" position="1 2 1"></a-light>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model
+          src="#umay-model"
+          position="0 0.3 0.1"
+          scale="0.8 0.8 0.8"
+          rotation="0 0 0"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear">
+        </a-gltf-model>
+      </a-entity>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+  </body>
+</html>ar
