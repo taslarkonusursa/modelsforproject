@@ -41,24 +41,23 @@
       device-orientation-permission-ui="enabled: false"
       style="width:100%;height:100%;">
 
-      <a-assets timeout="60000"></a-assets>
+      <a-assets timeout="30000"></a-assets>
 
       <a-light type="ambient" color="#ffffff" intensity="2"></a-light>
       <a-light type="directional" color="#ffffff" intensity="2" position="0 5 5"></a-light>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- 12 karakter için boş entity'ler -->
-      <a-entity id="target-0" mindar-image-target="targetIndex: 0"></a-entity>
-      <a-entity id="target-1" mindar-image-target="targetIndex: 1"></a-entity>
-      <a-entity id="target-2" mindar-image-target="targetIndex: 2"></a-entity>
-      <a-entity id="target-3" mindar-image-target="targetIndex: 3"></a-entity>
-      <a-entity id="target-4" mindar-image-target="targetIndex: 4"></a-entity>
-      <a-entity id="target-5" mindar-image-target="targetIndex: 5"></a-entity>
-      <a-entity id="target-6" mindar-image-target="targetIndex: 6"></a-entity>
-      <a-entity id="target-7" mindar-image-target="targetIndex: 7"></a-entity>
-      <a-entity id="target-8" mindar-image-target="targetIndex: 8"></a-entity>
-      <a-entity id="target-9" mindar-image-target="targetIndex: 9"></a-entity>
+      <a-entity id="target-0"  mindar-image-target="targetIndex: 0"></a-entity>
+      <a-entity id="target-1"  mindar-image-target="targetIndex: 1"></a-entity>
+      <a-entity id="target-2"  mindar-image-target="targetIndex: 2"></a-entity>
+      <a-entity id="target-3"  mindar-image-target="targetIndex: 3"></a-entity>
+      <a-entity id="target-4"  mindar-image-target="targetIndex: 4"></a-entity>
+      <a-entity id="target-5"  mindar-image-target="targetIndex: 5"></a-entity>
+      <a-entity id="target-6"  mindar-image-target="targetIndex: 6"></a-entity>
+      <a-entity id="target-7"  mindar-image-target="targetIndex: 7"></a-entity>
+      <a-entity id="target-8"  mindar-image-target="targetIndex: 8"></a-entity>
+      <a-entity id="target-9"  mindar-image-target="targetIndex: 9"></a-entity>
       <a-entity id="target-10" mindar-image-target="targetIndex: 10"></a-entity>
       <a-entity id="target-11" mindar-image-target="targetIndex: 11"></a-entity>
 
@@ -68,7 +67,6 @@
     <script>
       const BASE = 'https://taslarkonusursa.github.io/modelsforproject/';
 
-      // Marker sırasına göre GLB dosya adları
       const models = [
         'alkarisi.glb',   // 0
         'arcura.glb',     // 1
@@ -76,7 +74,7 @@
         'kayrahan.glb',   // 3
         'mergen.glb',     // 4
         'yelbegen.glb',   // 5
-        'ulgen.glb',      // 6      
+        'ulgen.glb',      // 6
         'tulpar.glb',     // 7
         'tepegoz.glb',    // 8
         'suiyesi.glb',    // 9
@@ -85,6 +83,7 @@
       ];
 
       const loaded = {};
+      const loading = {};
 
       function log(msg) {
         const s = document.getElementById('status');
@@ -94,7 +93,9 @@
 
       function loadModel(index) {
         if (loaded[index]) return;
-        loaded[index] = true;
+        if (loading[index]) return;
+
+        loading[index] = true;
 
         const target = document.getElementById('target-' + index);
         const url = BASE + models[index];
@@ -108,11 +109,18 @@
         entity.setAttribute('rotation', '0 180 0');
 
         entity.addEventListener('model-loaded', () => {
+          loaded[index] = true;
+          loading[index] = false;
           log('Hazır!');
         });
 
         entity.addEventListener('model-error', () => {
-          log('Model yüklenemedi!');
+          loading[index] = false;
+          loaded[index] = false;
+          log('Hata, tekrar denenecek...');
+          if (target.contains(entity)) {
+            target.removeChild(entity);
+          }
         });
 
         target.appendChild(entity);
@@ -131,7 +139,10 @@
         log('Hazır — kartı kameraya göster');
       });
 
-      // Her marker bulununca sadece o modeli indir
+      document.querySelector('a-scene').addEventListener('arError', (e) => {
+        log('Hata: ' + JSON.stringify(e.detail));
+      });
+
       for (let i = 0; i < 12; i++) {
         const el = document.getElementById('target-' + i);
         el.addEventListener('targetFound', () => {
