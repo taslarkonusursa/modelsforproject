@@ -68,18 +68,18 @@
       const BASE = 'https://taslarkonusursa.github.io/modelsforproject/';
 
       const models = [
-        'alkarisi.glb',   // 0
-        'arcura.glb',     // 1
-        'erlik.glb',      // 2
-        'kayrahan.glb',   // 3
-        'mergen.glb',     // 4
-        'yelbegen.glb',   // 5
-        'ulgen.glb',      // 6
-        'tulpar.glb',     // 7
-        'tepegoz.glb',    // 8
-        'suiyesi.glb',    // 9
-        'saman.glb',      // 10
-        'umayana.glb'     // 11
+        { file: 'alkarisi.glb',  rotation: '0 180 0' },
+        { file: 'arcura.glb',    rotation: '0 180 0' },
+        { file: 'erlik.glb',     rotation: '0 180 0' },
+        { file: 'kayrahan.glb',  rotation: '0 180 0' },
+        { file: 'mergen.glb',    rotation: '0 180 0' },
+        { file: 'yelbegen.glb',  rotation: '0 180 0' },
+        { file: 'ulgen.glb',     rotation: '0 180 0' },
+        { file: 'tulpar.glb',    rotation: '90 180 0' },
+        { file: 'tepegoz.glb',   rotation: '0 180 0' },
+        { file: 'suiyesi.glb',   rotation: '0 180 0' },
+        { file: 'saman.glb',     rotation: '0 180 0' },
+        { file: 'umayana.glb',   rotation: '0 180 0' },
       ];
 
       const loaded = {};
@@ -98,15 +98,16 @@
         loading[index] = true;
 
         const target = document.getElementById('target-' + index);
-        const url = BASE + models[index];
+        const url = BASE + models[index].file;
+        const rotation = models[index].rotation;
 
-        log(models[index] + ' yükleniyor...');
+        log(models[index].file + ' yükleniyor...');
 
         const entity = document.createElement('a-gltf-model');
         entity.setAttribute('src', url);
         entity.setAttribute('position', '0 0 0');
         entity.setAttribute('scale', '0.8 0.8 0.8');
-        entity.setAttribute('rotation', '90 180 0');
+        entity.setAttribute('rotation', rotation);
 
         entity.addEventListener('model-loaded', () => {
           loaded[index] = true;
@@ -135,13 +136,8 @@
         document.getElementById('loading').style.display = 'none';
       }, 15000);
 
-      document.querySelector('a-scene').addEventListener('arReady', () => {
-        log('Hazır — kartı kameraya göster');
-      });
-
-      document.querySelector('a-scene').addEventListener('arError', (e) => {
-        log('Hata: ' + JSON.stringify(e.detail));
-      });
+      document.querySelector('a-scene').addEventListener('arReady', () => log('Hazır — kartı kameraya göster'));
+      document.querySelector('a-scene').addEventListener('arError', (e) => log('Hata: ' + JSON.stringify(e.detail)));
 
       for (let i = 0; i < 12; i++) {
         const el = document.getElementById('target-' + i);
