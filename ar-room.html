@@ -1,1 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 100%; height: 100%;
+        background: #0a0a0f;
+        color: #fff;
+        font-family: sans-serif;
+        overflow: hidden;
+      }
 
+      #app {
+        width: 100%; height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+        color: #c9a84c;
+        letter-spacing: 2px;
+        text-align: center;
+      }
+
+      #carousel {
+        width: 100%;
+        max-width: 400px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      #viewer-wrap {
+        width: 260px;
+        height: 320px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #c9a84c44;
+        background: #111;
+        position: relative;
+      }
+
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        --poster-color: transparent;
+      }
+
+      .nav-btn {
+        background: rgba(201,168,76,0.15);
+        border: 1px solid #c9a84c;
+        color: #c9a84c;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .nav-btn:hover {
+        background: rgba(201,168,76,0.3);
+      }
+
+      #char-name {
+        font-size: 22px;
+        font-weight: bold;
+        color: #c9a84c;
+        text-align: center;
+        letter-spacing: 1px;
+      }
+
+      #dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #444;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .dot.active {
+        background: #c9a84c;
+      }
+
+      #ar-btn {
+        background: linear-gradient(135deg, #c9a84c, #8b5e1a);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 14px 40px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        letter-spacing: 1px;
+      }
+
+      #ar-btn:hover {
+        opacity: 0.9;
+      }
+
+      #loading-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: #111;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c9a84c;
+        font-size: 13px;
+        border-radius: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>⚔ TÜRK MİTOLOJİSİ</h1>
+
+      <div id="carousel">
+        <button class="nav-btn" id="prev">‹</button>
+
+        <div id="viewer-wrap">
+          <div id="loading-overlay">Yükleniyor...</div>
+          <model-viewer
+            id="mv"
+            camera-controls
+            auto-rotate
+            shadow-intensity="0.5"
+            style="--poster-color: transparent;">
+          </model-viewer>
+        </div>
+
+        <button class="nav-btn" id="next">›</button>
+      </div>
+
+      <div id="char-name"></div>
+      <div id="dots"></div>
+
+      <button id="ar-btn">✨ Odana Yerleştir</button>
+    </div>
+
+    <script>
+      const BASE = 'https://taslarkonusursa.github.io/modelsforproject/';
+
+      const characters = [
+        { name: 'Umay Ana',   file: 'umayana.glb'   },
+        { name: 'Arçura',     file: 'arcura.glb'    },
+        { name: 'Şaman',      file: 'saman.glb'     },
+        { name: 'Erlik',      file: 'erlik.glb'     },
+        { name: 'Kayra Han',  file: 'kayrahan.glb'  },
+        { name: 'Ülgen',      file: 'ulgen.glb'     },
+        { name: 'Su İyesi',   file: 'suiyesi.glb'   },
+        { name: 'Yelbegen',   file: 'yelbegen.glb'  },
+        { name: 'Alkарısı',  file: 'alkarisi.glb'  },
+        { name: 'Mergen',     file: 'mergen.glb'    },
+        { name: 'Tulpar',     file: 'tulpar.glb'    },
+        { name: 'Tepegöz',    file: 'tepegoz.glb'   },
+      ];
+
+      let current = 0;
+      const mv = document.getElementById('mv');
+      const charName = document.getElementById('char-name');
+      const dotsEl = document.getElementById('dots');
+      const loading = document.getElementById('loading-overlay');
+
+      // Dots oluştur
+      characters.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goTo(i);
+        dotsEl.appendChild(dot);
+      });
+
+      function goTo(index) {
+        current = index;
+        const char = characters[index];
+
+        loading.style.display = 'flex';
+        mv.src = BASE + char.file;
+        charName.textContent = char.name;
+
+        // Dots güncelle
+        document.querySelectorAll('.dot').forEach((d, i) => {
+          d.classList.toggle('active', i === index);
+        });
+      }
+
+      mv.addEventListener('load', () => {
+        loading.style.display = 'none';
+      });
+
+      document.getElementById('prev').onclick = () => {
+        goTo((current - 1 + characters.length) % characters.length);
+      };
+
+      document.getElementById('next').onclick = () => {
+        goTo((current + 1) % characters.length);
+      };
+
+      document.getElementById('ar-btn').onclick = () => {
+        mv.activateAR();
+      };
+
+      // İlk karakteri yükle
+      goTo(0);
+    </script>
+  </body>
+</html>
