@@ -55,6 +55,7 @@
         width: 100%;
         height: 100%;
         --poster-color: transparent;
+        transition: opacity 0.3s;
       }
 
       .nav-btn {
@@ -129,6 +130,7 @@
         color: #c9a84c;
         font-size: 13px;
         border-radius: 16px;
+        z-index: 10;
       }
     </style>
   </head>
@@ -146,7 +148,7 @@
             camera-controls
             auto-rotate
             shadow-intensity="0.5"
-            style="--poster-color: transparent;">
+            style="opacity: 0;">
           </model-viewer>
         </div>
 
@@ -163,18 +165,18 @@
       const BASE = 'https://taslarkonusursa.github.io/modelsforproject/';
 
       const characters = [
-        { name: 'Umay Ana',   file: 'umayana.glb'   },
-        { name: 'Arçura',     file: 'arcura.glb'    },
-        { name: 'Şaman',      file: 'saman.glb'     },
-        { name: 'Erlik',      file: 'erlik.glb'     },
-        { name: 'Kayra Han',  file: 'kayrahan.glb'  },
-        { name: 'Ülgen',      file: 'ulgen.glb'     },
-        { name: 'Su İyesi',   file: 'suiyesi.glb'   },
-        { name: 'Yelbegen',   file: 'yelbegen.glb'  },
-        { name: 'Alkарısı',  file: 'alkarisi.glb'  },
-        { name: 'Mergen',     file: 'mergen.glb'    },
-        { name: 'Tulpar',     file: 'tulpar.glb'    },
-        { name: 'Tepegöz',    file: 'tepegoz.glb'   },
+        { name: 'Umay Ana',  file: 'umayana.glb'  },
+        { name: 'Arçura',    file: 'arcura.glb'   },
+        { name: 'Şaman',     file: 'saman.glb'    },
+        { name: 'Erlik',     file: 'erlik.glb'    },
+        { name: 'Kayra Han', file: 'kayrahan.glb' },
+        { name: 'Ülgen',     file: 'ulgen.glb'    },
+        { name: 'Su İyesi',  file: 'suiyesi.glb'  },
+        { name: 'Yelbegen',  file: 'yelbegen.glb' },
+        { name: 'Alkарısı', file: 'alkarisi.glb' },
+        { name: 'Mergen',    file: 'mergen.glb'   },
+        { name: 'Tulpar',    file: 'tulpar.glb'   },
+        { name: 'Tepegöz',   file: 'tepegoz.glb'  },
       ];
 
       let current = 0;
@@ -183,7 +185,6 @@
       const dotsEl = document.getElementById('dots');
       const loading = document.getElementById('loading-overlay');
 
-      // Dots oluştur
       characters.forEach((_, i) => {
         const dot = document.createElement('div');
         dot.className = 'dot' + (i === 0 ? ' active' : '');
@@ -196,10 +197,10 @@
         const char = characters[index];
 
         loading.style.display = 'flex';
+        mv.style.opacity = '0';
         mv.src = BASE + char.file;
         charName.textContent = char.name;
 
-        // Dots güncelle
         document.querySelectorAll('.dot').forEach((d, i) => {
           d.classList.toggle('active', i === index);
         });
@@ -207,6 +208,7 @@
 
       mv.addEventListener('load', () => {
         loading.style.display = 'none';
+        mv.style.opacity = '1';
       });
 
       document.getElementById('prev').onclick = () => {
@@ -221,7 +223,6 @@
         mv.activateAR();
       };
 
-      // İlk karakteri yükle
       goTo(0);
     </script>
   </body>
