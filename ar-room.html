@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Türk Mitolojisi AR Galeri</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -10,7 +11,7 @@
         width: 100%; height: 100%;
         background: #0a0a0f;
         color: #fff;
-        font-family: sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         overflow: hidden;
       }
 
@@ -27,97 +28,111 @@
       h1 {
         font-size: 20px;
         color: #c9a84c;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
         text-align: center;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px rgba(201, 168, 76, 0.3);
       }
 
       #carousel {
         width: 100%;
-        max-width: 400px;
-        position: relative;
+        max-width: 450px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 12px;
+        gap: 15px;
       }
 
       #viewer-wrap {
-        width: 260px;
-        height: 320px;
-        border-radius: 16px;
+        width: 280px;
+        height: 380px;
+        border-radius: 24px;
         overflow: hidden;
-        border: 1px solid #c9a84c44;
-        background: #111;
+        border: 2px solid #c9a84c33;
+        background: radial-gradient(circle, #1a1a25 0%, #0a0a0f 100%);
         position: relative;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       }
 
       model-viewer {
         width: 100%;
         height: 100%;
         --poster-color: transparent;
-        transition: opacity 0.3s;
+        transition: opacity 0.4s ease-in-out;
+      }
+
+      /* AR Butonunun model içindeki varsayılan görünümünü gizliyoruz çünkü kendi butonumuzu kullanacağız */
+      model-viewer#mv::part(default-ar-button) {
+        display: none;
       }
 
       .nav-btn {
-        background: rgba(201,168,76,0.15);
+        background: rgba(201,168,76,0.1);
         border: 1px solid #c9a84c;
         color: #c9a84c;
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        font-size: 20px;
+        font-size: 24px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
+        transition: all 0.3s ease;
       }
 
       .nav-btn:hover {
-        background: rgba(201,168,76,0.3);
+        background: #c9a84c;
+        color: #0a0a0f;
       }
 
       #char-name {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: bold;
         color: #c9a84c;
         text-align: center;
-        letter-spacing: 1px;
+        min-height: 32px;
       }
 
       #dots {
         display: flex;
         gap: 8px;
         justify-content: center;
+        flex-wrap: wrap;
+        max-width: 80%;
       }
 
       .dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #444;
+        background: #333;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: all 0.3s ease;
       }
 
       .dot.active {
         background: #c9a84c;
+        transform: scale(1.3);
+        box-shadow: 0 0 8px #c9a84c;
       }
 
       #ar-btn {
         background: linear-gradient(135deg, #c9a84c, #8b5e1a);
         color: #fff;
         border: none;
-        border-radius: 999px;
-        padding: 14px 40px;
+        border-radius: 12px;
+        padding: 16px 32px;
         font-size: 16px;
         font-weight: bold;
         cursor: pointer;
         letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(139, 94, 26, 0.4);
+        transition: transform 0.2s active;
       }
 
-      #ar-btn:hover {
-        opacity: 0.9;
+      #ar-btn:active {
+        transform: scale(0.95);
       }
 
       #loading-overlay {
@@ -125,40 +140,62 @@
         top: 0; left: 0; right: 0; bottom: 0;
         background: #111;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         color: #c9a84c;
-        font-size: 13px;
-        border-radius: 16px;
+        font-size: 14px;
         z-index: 10;
+        gap: 10px;
       }
+
+      .spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid #c9a84c33;
+        border-top: 3px solid #c9a84c;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
   </head>
   <body>
+
     <div id="app">
-      <h1>⚔ TÜRK MİTOLOJİSİ</h1>
+      <h1>⚔ TÜRK MİTOLOJİSİ ⚔</h1>
 
       <div id="carousel">
-        <button class="nav-btn" id="prev">‹</button>
+        <button class="nav-btn" id="prev" aria-label="Önceki">‹</button>
 
         <div id="viewer-wrap">
-          <div id="loading-overlay">Yükleniyor...</div>
+          <div id="loading-overlay">
+            <div class="spinner"></div>
+            <span>Ruhlar Çağrılıyor...</span>
+          </div>
+          
           <model-viewer
             id="mv"
             camera-controls
             auto-rotate
-            shadow-intensity="0.5"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            ar-scale="auto"
+            shadow-intensity="1"
+            environment-image="neutral"
+            exposure="1"
             style="opacity: 0;">
           </model-viewer>
         </div>
 
-        <button class="nav-btn" id="next">›</button>
+        <button class="nav-btn" id="next" aria-label="Sonraki">›</button>
       </div>
 
       <div id="char-name"></div>
       <div id="dots"></div>
 
-      <button id="ar-btn">✨ Odana Yerleştir</button>
+      <button id="ar-btn">✨ ODANA YERLEŞTİR</button>
     </div>
 
     <script>
@@ -168,12 +205,12 @@
         { name: 'Umay Ana',  file: 'umayana.glb'  },
         { name: 'Arçura',    file: 'arcura.glb'   },
         { name: 'Şaman',     file: 'saman.glb'    },
-        { name: 'Erlik',     file: 'erlik.glb'    },
+        { name: 'Erlik Han', file: 'erlik.glb'    },
         { name: 'Kayra Han', file: 'kayrahan.glb' },
         { name: 'Ülgen',     file: 'ulgen.glb'    },
         { name: 'Su İyesi',  file: 'suiyesi.glb'  },
         { name: 'Yelbegen',  file: 'yelbegen.glb' },
-        { name: 'Alkарısı', file: 'alkarisi.glb' },
+        { name: 'Alkarısı',  file: 'alkarisi.glb' },
         { name: 'Mergen',    file: 'mergen.glb'   },
         { name: 'Tulpar',    file: 'tulpar.glb'   },
         { name: 'Tepegöz',   file: 'tepegoz.glb'  },
@@ -185,6 +222,7 @@
       const dotsEl = document.getElementById('dots');
       const loading = document.getElementById('loading-overlay');
 
+      // Noktaları (Dots) Oluştur
       characters.forEach((_, i) => {
         const dot = document.createElement('div');
         dot.className = 'dot' + (i === 0 ? ' active' : '');
@@ -198,19 +236,24 @@
 
         loading.style.display = 'flex';
         mv.style.opacity = '0';
+        
+        // Model kaynağını güncelle
         mv.src = BASE + char.file;
         charName.textContent = char.name;
 
+        // Aktif noktayı güncelle
         document.querySelectorAll('.dot').forEach((d, i) => {
           d.classList.toggle('active', i === index);
         });
       }
 
+      // Model yüklendiğinde tetiklenir
       mv.addEventListener('load', () => {
         loading.style.display = 'none';
         mv.style.opacity = '1';
       });
 
+      // Navigasyon Butonları
       document.getElementById('prev').onclick = () => {
         goTo((current - 1 + characters.length) % characters.length);
       };
@@ -219,10 +262,17 @@
         goTo((current + 1) % characters.length);
       };
 
+      // AR Butonu Tetikleyicisi
       document.getElementById('ar-btn').onclick = () => {
-        mv.activateAR();
+        // Tarayıcı AR destekliyorsa aktifleştirir
+        if (mv.canActivateAR) {
+          mv.activateAR();
+        } else {
+          alert("Cihazınız AR özelliğini desteklemiyor veya uyumlu bir tarayıcıda değilsiniz.");
+        }
       };
 
+      // İlk yükleme
       goTo(0);
     </script>
   </body>
