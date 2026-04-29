@@ -2,152 +2,128 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     <style>
-      html, body { margin: 0; overflow: hidden; width: 100%; height: 100%; }
-      #loading {
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: #000;
-        display: flex; flex-direction: column;
-        justify-content: center; align-items: center;
-        z-index: 99999; color: #fff; font-family: monospace;
+      /* Giriş Ekranı Tasarımı */
+      #ui-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: white; z-index: 10000;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-family: sans-serif;
       }
-      #loading-text { font-size: 16px; margin-top: 10px; }
-      #status {
-        position: fixed; top: 10px; left: 10px; right: 10px;
-        background: rgba(0,0,0,0.7); color: #fff;
-        padding: 8px 12px; border-radius: 8px;
-        font-size: 13px; font-family: monospace;
-        z-index: 9999; pointer-events: none;
-        display: none;
+      #explore-btn {
+        padding: 15px 40px; font-size: 20px; background: #000; color: #fff;
+        border: none; border-radius: 30px; cursor: pointer; transition: 0.3s;
+      }
+      #explore-btn:active { transform: scale(0.95); }
+
+      /* Kamera ve AR Alanı */
+      #ar-container { display: none; width: 100%; height: 100%; }
+      
+      video {
+        width: 100vw !important; height: 100vh !important;
+        object-fit: cover !important; position: fixed; top: 0; left: 0;
+      }
+
+      #status-msg {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.7); color: white; padding: 10px 20px;
+        border-radius: 20px; z-index: 9999; display: none;
       }
     </style>
   </head>
   <body>
-    <div id="loading">
-      <div style="font-size:18px;">Türk Mitolojisi AR</div>
-      <div id="loading-text">Yükleniyor...</div>
+
+    <div id="ui-overlay">
+      <h1 style="margin-bottom: 20px;">Türk Mitolojisi AR</h1>
+      <button id="explore-btn">Keşfet</button>
+      <p style="margin-top: 15px; color: #666;">Kamerayı açmak için butona bas.</p>
     </div>
-    <div id="status"></div>
 
-    <a-scene
-      embedded
-      mindar-image="imageTargetSrc: https://taslarkonusursa.github.io/modelsforproject/targets.mind; autoStart: true;"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights: true"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-      style="width:100%;height:100%;">
+    <div id="status-msg"></div>
 
-      <a-assets timeout="30000"></a-assets>
+    <div id="ar-container">
+      <a-scene
+        mindar-image="imageTargetSrc: https://taslarkonusursa.github.io/modelsforproject/targets.mind; autoStart: false; uiScanning: yes;"
+        color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights: true"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
 
-      <a-light type="ambient" color="#ffffff" intensity="2"></a-light>
-      <a-light type="directional" color="#ffffff" intensity="2" position="0 5 5"></a-light>
+        <a-assets timeout="30000"></a-assets>
+        <a-light type="ambient" intensity="1.5"></a-light>
+        <a-light type="directional" intensity="1" position="0 5 5"></a-light>
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-      <a-entity id="target-0"  mindar-image-target="targetIndex: 0"></a-entity>
-      <a-entity id="target-1"  mindar-image-target="targetIndex: 1"></a-entity>
-      <a-entity id="target-2"  mindar-image-target="targetIndex: 2"></a-entity>
-      <a-entity id="target-3"  mindar-image-target="targetIndex: 3"></a-entity>
-      <a-entity id="target-4"  mindar-image-target="targetIndex: 4"></a-entity>
-      <a-entity id="target-5"  mindar-image-target="targetIndex: 5"></a-entity>
-      <a-entity id="target-6"  mindar-image-target="targetIndex: 6"></a-entity>
-      <a-entity id="target-7"  mindar-image-target="targetIndex: 7"></a-entity>
-      <a-entity id="target-8"  mindar-image-target="targetIndex: 8"></a-entity>
-      <a-entity id="target-9"  mindar-image-target="targetIndex: 9"></a-entity>
-      <a-entity id="target-10" mindar-image-target="targetIndex: 10"></a-entity>
-      <a-entity id="target-11" mindar-image-target="targetIndex: 11"></a-entity>
-
-      <a-entity camera></a-entity>
-    </a-scene>
+        <a-entity id="target-0" mindar-image-target="targetIndex: 0"></a-entity>
+        <a-entity id="target-1" mindar-image-target="targetIndex: 1"></a-entity>
+        <a-entity id="target-2" mindar-image-target="targetIndex: 2"></a-entity>
+        <a-entity id="target-3" mindar-image-target="targetIndex: 3"></a-entity>
+        <a-entity id="target-4" mindar-image-target="targetIndex: 4"></a-entity>
+        <a-entity id="target-5" mindar-image-target="targetIndex: 5"></a-entity>
+        <a-entity id="target-6" mindar-image-target="targetIndex: 6"></a-entity>
+        <a-entity id="target-7" mindar-image-target="targetIndex: 7"></a-entity>
+        <a-entity id="target-8" mindar-image-target="targetIndex: 8"></a-entity>
+        <a-entity id="target-9" mindar-image-target="targetIndex: 9"></a-entity>
+        <a-entity id="target-10" mindar-image-target="targetIndex: 10"></a-entity>
+        <a-entity id="target-11" mindar-image-target="targetIndex: 11"></a-entity>
+      </a-scene>
+    </div>
 
     <script>
       const BASE = 'https://taslarkonusursa.github.io/modelsforproject/';
-
       const models = [
-        { file: 'alkarisi.glb',  rotation: '0 270 -90' },
-        { file: 'arcura.glb',    rotation: '0 270 -90' },
-        { file: 'erlik.glb',     rotation: '0 270 -90' },
-        { file: 'kayrahan.glb',  rotation: '0 270 -90' },
-        { file: 'mergen.glb',    rotation: '0 270 -90' },
-        { file: 'yelbegen.glb',  rotation: '0 270 -90' },
-        { file: 'ulgen.glb',     rotation: '0 270 -90' },
-        { file: 'tulpar.glb',    rotation: '0 270 -90' },
-        { file: 'tepegoz.glb',   rotation: '0 270 -90' },
-        { file: 'suiyesi.glb',   rotation: '0 270 -90' },
-        { file: 'saman.glb',     rotation: '0 270 -90' },
-        { file: 'umayana.glb',   rotation: '0 270 -90' },
+        { file: 'alkarisi.glb' }, { file: 'arcura.glb' }, { file: 'erlik.glb' },
+        { file: 'kayrahan.glb' }, { file: 'mergen.glb' }, { file: 'yelbegen.glb' },
+        { file: 'ulgen.glb' }, { file: 'tulpar.glb' }, { file: 'tepegoz.glb' },
+        { file: 'suiyesi.glb' }, { file: 'saman.glb' }, { file: 'umayana.glb' }
       ];
 
-      const loaded = {};
-      const loading = {};
+      const btn = document.getElementById('explore-btn');
+      const overlay = document.getElementById('ui-overlay');
+      const container = document.getElementById('ar-container');
+      const sceneEl = document.querySelector('a-scene');
 
-      function log(msg) {
-        const s = document.getElementById('status');
+      // KEŞFET BUTONUNA BASILDIĞINDA
+      btn.addEventListener('click', () => {
+        overlay.style.display = 'none'; // Giriş ekranını gizle
+        container.style.display = 'block'; // AR alanını göster
+        sceneEl.systems['mindar-image-system'].start(); // Kamerayı başlat
+      });
+
+      function showMsg(txt) {
+        const s = document.getElementById('status-msg');
         s.style.display = 'block';
-        s.textContent = msg;
+        s.textContent = txt;
       }
 
       function loadModel(index) {
-        if (loaded[index]) return;
-        if (loading[index]) return;
-
-        loading[index] = true;
-
         const target = document.getElementById('target-' + index);
-        const url = BASE + models[index].file;
-        const rotation = models[index].rotation;
-
-        log(models[index].file + ' yükleniyor...');
+        if (target.getAttribute('model-status') === 'loaded') return;
 
         const entity = document.createElement('a-gltf-model');
-        entity.setAttribute('src', url);
-        entity.setAttribute('position', '0 0 0');
+        entity.setAttribute('src', BASE + models[index].file);
         entity.setAttribute('scale', '1.8 1.8 1.8');
-        entity.setAttribute('rotation', rotation);
-
+        entity.setAttribute('rotation', '0 270 -90');
+        
         entity.addEventListener('model-loaded', () => {
-          loaded[index] = true;
-          loading[index] = false;
-          log('Hazır!');
-        });
-
-        entity.addEventListener('model-error', () => {
-          loading[index] = false;
-          loaded[index] = false;
-          log('Hata, tekrar denenecek...');
-          if (target.contains(entity)) {
-            target.removeChild(entity);
-          }
+          target.setAttribute('model-status', 'loaded');
+          showMsg('Karakter Hazır!');
         });
 
         target.appendChild(entity);
       }
 
-      document.querySelector('a-scene').addEventListener('loaded', () => {
-        document.getElementById('loading').style.display = 'none';
-        log('Kartı kameraya göster');
-      });
-
-      setTimeout(() => {
-        document.getElementById('loading').style.display = 'none';
-      }, 15000);
-
-      document.querySelector('a-scene').addEventListener('arReady', () => log('Hazır — kartı kameraya göster'));
-      document.querySelector('a-scene').addEventListener('arError', (e) => log('Hata: ' + JSON.stringify(e.detail)));
-
-      for (let i = 0; i < 12; i++) {
+      // Event Listeners
+      for (let i = 0; i < models.length; i++) {
         const el = document.getElementById('target-' + i);
         el.addEventListener('targetFound', () => {
-          log(i + '. marker bulundu!');
+          showMsg('Marker Bulundu!');
           loadModel(i);
         });
-        el.addEventListener('targetLost', () => {
-          log('Marker kayboldu');
-        });
+        el.addEventListener('targetLost', () => showMsg('Kartı Gösterin...'));
       }
     </script>
   </body>
